@@ -402,6 +402,14 @@ def test_determinant():
     assert M.det(method="bareiss") == z**2 - x*y
     assert M.det(method="berkowitz") == z**2 - x*y
 
+    # issue 13835
+    a = symbols('a')
+    M = lambda n: Matrix([[i + a*j for i in range(n)]
+                          for j in range(n)])
+    assert M(5).det() == 0
+    assert M(6).det() == 0
+    assert M(7).det() == 0
+
 
 def test_det_LU_decomposition():
 
@@ -1690,6 +1698,14 @@ def test_jordan_form():
     P, J = m.jordan_form()
     assert Jmust == J
 
+    # checking for maximum precision to remain unchanged
+    m = Matrix([[Float('1.0', precision=110), Float('2.0', precision=110)],
+                [Float('3.14159265358979323846264338327', precision=110), Float('4.0', precision=110)]])
+    P, J = m.jordan_form()
+    for term in J._mat:
+        if isinstance(term, Float):
+            assert term._prec == 110
+
 
 def test_jordan_form_complex_issue_9274():
     A = Matrix([[ 2,  4,  1,  0],
@@ -2131,6 +2147,7 @@ def test_matrix_norm():
     assert A.norm(-2) == 0
     assert A.norm('frobenius') == 2
     assert eye(10).norm(2) == eye(10).norm(-2) == 1
+    assert A.norm(oo) == 2
 
     # Test with Symbols and more complex entries
     A = Matrix([[3, y, y], [x, S(1)/2, -pi]])
