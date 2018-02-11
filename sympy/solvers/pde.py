@@ -230,8 +230,7 @@ def _handle_Integral(expr, func, order, hint):
         return expr
 
 
-def classify_pde(eq, func=None, dict=False, ics=None, xi=None, eta=0,
-        n=None, x0=0, prep=True):
+def classify_pde(eq, func=None, dict=False, prep=True):
     """
     Returns a tuple of possible pdsolve() classifications for a PDE.
 
